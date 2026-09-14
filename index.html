@@ -1,1 +1,64 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>S.SPORT International</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#070f1f;color:#fff;font-family:Arial}header{background:#0f1b2e;padding:14px 18px;display:flex;justify-content:space-between;border-bottom:2px solid #00e676;position:sticky;top:0}.logo{font-weight:900}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 16px;background:#0c1628}.tab{white-space:nowrap;padding:8px 14px;border-radius:20px;background:#14213a;border:1px solid #1e335a;font-size:13px;font-weight:700}.tab.on{background:#00e676;color:#000}.hero{text-align:center;padding:28px 20px 10px}.hero h1{font-size:34px}h1 b{color:#00e676}.league{margin:22px 16px 6px;color:#00e676;font-size:11px;letter-spacing:2px;font-weight:800}.match{background:#12213a;border:1px solid #1e335a;border-radius:14px;padding:12px 14px;margin:8px 16px;display:flex;justify-content:space-between;align-items:center}.live{color:#00e676;font-weight:800;font-size:11px}.score{font-weight:900;font-size:18px;background:#0a1a2e;padding:6px 10px;border-radius:8px;min-width:50px;text-align:center}</style></head><body><header><div class="logo">S.SPORT</div><div style="font-size:11px;background:#00e676;color:#000;padding:4px 10px;border-radius:20px;font-weight:900">LIVE</div></header><div class="tabs"><div class="tab on">All</div><div class="tab">UCL</div><div class="tab">Premier League</div><div class="tab">La Liga</div><div class="tab">GPL</div><div class="tab">AFCON</div></div><div class="hero"><h1>World football.<br><b>Live now.</b></h1><p style="color:#7a8ca8;margin-top:10px;font-size:13px">From Accra to Madrid - every goal, every minute.</p></div><div class="league">PREMIER LEAGUE</div><div class="match"><div><div class="live">78' LIVE</div>Man City vs Arsenal</div><div class="score">2-1</div></div><div class="match"><div><div style="color:#8aa;font-size:11px">FT</div>Liverpool vs Chelsea</div><div class="score">3-0</div></div><div class="league">LA LIGA</div><div class="match"><div><div class="live">65' LIVE</div>Real Madrid vs Barcelona</div><div class="score">1-1</div></div><div class="league">GHANA PREMIER LEAGUE</div><div class="match"><div><div class="live">78' LIVE</div>Hearts of Oak vs Kotoko</div><div class="score">1-1</div></div><div class="league">CHAMPIONS LEAGUE</div><div class="match"><div><div style="color:#8aa;font-size:11px">Tonight 19:00 GMT</div>PSG vs Bayern</div><div class="score" style="background:transparent;color:#8aa">vs</div></div><div style="text-align:center;padding:35px;color:#445;font-size:12px">© 2026 S.SPORT INTERNATIONAL<br>Made in Ghana - For the World</div></body></html>
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>S.SPORT LIVE</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#070f1f;color:#fff;font-family:Arial}header{background:#0f1b2e;padding:14px 18px;display:flex;justify-content:space-between;border-bottom:2px solid #00e676;position:sticky;top:0;z-index:9}.logo{font-weight:900}.tabs{display:flex;gap:8px;overflow:auto;padding:12px 16px;background:#0c1628;position:sticky;top:52px;z-index:8}.tab{white-space:nowrap;padding:8px 14px;border-radius:20px;background:#14213a;border:1px solid #1e335a;font-size:13px;font-weight:700;cursor:pointer}.tab.on{background:#00e676;color:#000}.hero{text-align:center;padding:22px 20px 10px}.hero h1{font-size:28px}h1 b{color:#00e676}.league{margin:22px 16px 6px;color:#00e676;font-size:11px;letter-spacing:2px;font-weight:800}.match{background:#12213a;border:1px solid #1e335a;border-radius:14px;padding:12px 14px;margin:8px 16px;display:flex;justify-content:space-between;align-items:center}.live{color:#00e676;font-weight:800;font-size:11px}.score{font-weight:900;font-size:18px;background:#0a1a2e;padding:6px 10px;border-radius:8px;min-width:55px;text-align:center}.status{color:#8aa;font-size:11px}.loading{text-align:center;padding:40px;color:#7a8ca8}</style>
+</head><body>
+<header><div class="logo">S.SPORT</div><div style="font-size:11px;background:#00e676;color:#000;padding:4px 10px;border-radius:20px;font-weight:900">LIVE</div></header>
+<div class="tabs"><div class="tab on" data-l="all">All</div><div class="tab" data-l="eng.1">Premier League</div><div class="tab" data-l="esp.1">La Liga</div><div class="tab" data-l="gha.1">GPL</div><div class="tab" data-l="uefa.champions">UCL</div></div>
+<div class="hero"><h1>World football.<br><b>Live now.</b></h1><p id="upd" style="color:#7a8ca8;margin-top:8px;font-size:12px">Loading real scores...</p></div>
+<div id="games"><div class="loading">Fetching live matches from ESPN...</div></div>
+<div style="text-align:center;padding:35px;color:#445;font-size:12px">© 2026 S.SPORT INTERNATIONAL<br>Live via ESPN • Updates every 60s</div>
+<script>
+const leagues={ "eng.1":"PREMIER LEAGUE", "esp.1":"LA LIGA", "gha.1":"GHANA PREMIER LEAGUE", "uefa.champions":"CHAMPIONS LEAGUE" };
+let current="all";
+async function fetchLeague(code){
+ try{
+  const r=await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${code}/scoreboard`);
+  const j=await r.json();
+  return j.events||[];
+ }catch(e){return []}
+}
+async function loadAll(){
+ const box=document.getElementById('games');
+ box.innerHTML='<div class="loading">Live updating...</div>';
+ let all=[];
+ for(let code of Object.keys(leagues)){
+  if(current!=="all" && current!==code) continue;
+  const ev=await fetchLeague(code);
+  ev.forEach(m=>{ m._league=code; all.push(m); });
+ }
+ if(all.length===0){
+  box.innerHTML='<div class="loading">No live matches now. Check later — European games start evenings GMT.<br><br>Last check: '+new Date().toLocaleTimeString()+'</div>';
+  document.getElementById('upd').textContent='Updated: '+new Date().toLocaleString()+' • No matches live';
+  return;
+ }
+ let html='';
+ let lastL='';
+ all.forEach(e=>{
+  const comp=e._league;
+  if(lastL!==comp){ html+=`<div class="league">${leagues[comp]}</div>`; lastL=comp; }
+  const c=e.competitions[0];
+  const home=c.competitors.find(x=>x.homeAway==='home');
+  const away=c.competitors.find(x=>x.homeAway==='away');
+  const st=c.status;
+  const isLive=st.type.state==='in';
+  const scoreH=home.score||'0';
+  const scoreA=away.score||'0';
+  const clock=st.displayClock||st.type.shortDetail||'';
+  const liveClass=isLive?'live':'status';
+  html+=`<div class="match"><div><div class="${liveClass}">${clock.toUpperCase()}</div>${home.team.shortDisplayName} vs ${away.team.shortDisplayName}</div><div class="score">${isLive||st.type.completed?scoreH+'-'+scoreA:'vs'}</div></div>`;
+ });
+ box.innerHTML=html;
+ document.getElementById('upd').textContent='Live • Updated: '+new Date().toLocaleTimeString()+' • Auto refresh 60s';
+}
+document.querySelectorAll('.tab').forEach(t=>{
+ t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');
+  current=t.dataset.l;
+  loadAll();
+ }
+});
+loadAll();
+setInterval(loadAll,60000);
+</script>
+</body></html>
